@@ -1,0 +1,24 @@
+
+spring:
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+      settings:
+        web-allow-others: true
+
+  datasource:
+    driver-class-name: org.h2.Driver
+    url: jdbc:h2:~/security;MODE=MYSQL
+    username: sa
+    password:
+
+  jpa:
+    hibernate:
+      ddl-auto: create
+
+server:
+  error:
+    include-exception: true
+    include-message: always
+    include-stacktrace: always
