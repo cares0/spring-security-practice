@@ -16,9 +16,20 @@ spring:
   jpa:
     hibernate:
       ddl-auto: create
+    properties:
+      hibernate:
+        show_sql: true
+        format_sql: true
+
+  devtools:
+    livereload:
+      enabled: true
+    restart:
+      enabled: true
 
 server:
   error:
     include-exception: true
     include-message: always
     include-stacktrace: always
+

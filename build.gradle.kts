@@ -42,7 +42,7 @@ dependencies {
     runtimeOnly("com.h2database:h2")
     runtimeOnly("com.mysql:mysql-connector-j")
 
-    // runtimeOnly("org.springframework.boot:spring-boot-devtools:3.1.1")
+    runtimeOnly("org.springframework.boot:spring-boot-devtools:3.1.1")
 
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.springframework.security:spring-security-test")
