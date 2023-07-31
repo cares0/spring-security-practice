@@ -24,6 +24,7 @@ class CustomAuthenticationProvider(
             throw BadCredentialsException("FAIL")
         }
 
+
         val details = authentication.details as FormWebAuthenticationDetails
 
         if (details.secretKey == null || details.secretKey != "secret") {

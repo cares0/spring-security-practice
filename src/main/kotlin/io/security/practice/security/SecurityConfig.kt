@@ -15,6 +15,7 @@ import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.security.crypto.factory.PasswordEncoderFactories
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.security.web.SecurityFilterChain
+import org.springframework.security.web.authentication.AuthenticationFailureHandler
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler
 import org.springframework.security.web.authentication.WebAuthenticationDetails
@@ -25,6 +26,7 @@ class SecurityConfig(
     private val userDetailsService: UserDetailsService,
     private val authenticationDetailsSource: AuthenticationDetailsSource<HttpServletRequest, WebAuthenticationDetails>,
     private val successHandler: AuthenticationSuccessHandler,
+    private val failureHandler: AuthenticationFailureHandler,
 ) {
 
 //    @Bean
@@ -57,7 +59,7 @@ class SecurityConfig(
         http
             .authorizeHttpRequests { authorize ->
                 authorize
-                    .requestMatchers("/", "users").permitAll()
+                    .requestMatchers("/", "/users", "/login").permitAll()
                     .requestMatchers(AntPathRequestMatcher.antMatcher("/mypage")).hasRole("USER")
                     .requestMatchers(AntPathRequestMatcher.antMatcher("/messages")).hasRole("MANAGER")
                     .requestMatchers(AntPathRequestMatcher.antMatcher("/config")).hasRole("ADMIN")
@@ -72,6 +74,7 @@ class SecurityConfig(
                     .defaultSuccessUrl("/")
                     .authenticationDetailsSource(authenticationDetailsSource)
                     .successHandler(successHandler)
+                    .failureHandler(failureHandler)
                     .permitAll()
             }
 

@@ -7,8 +7,11 @@ import jakarta.servlet.http.HttpServletResponse
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler
 import org.springframework.stereotype.Controller
+import org.springframework.ui.Model
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.RequestParam
+import java.lang.Exception
 
 @Controller
 class UserController(
@@ -34,7 +37,15 @@ class UserController(
     }
 
     @GetMapping("/login")
-    fun login(): String {
+    fun login(
+        @RequestParam(required = false) error: String?,
+        @RequestParam(required = false) exception: String?,
+        model: Model
+    ): String {
+
+        model.addAttribute("error", error)
+        model.addAttribute("exception", exception)
+
         return "user/login/login"
     }
 
