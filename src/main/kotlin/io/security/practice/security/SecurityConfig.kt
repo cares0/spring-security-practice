@@ -1,10 +1,12 @@
 package io.security.practice.security
 
+import io.security.practice.security.authentication.CustomAuthenticationProvider
 import io.security.practice.security.authentication.CustomUserDetailsService
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.security.authentication.AuthenticationManager
+import org.springframework.security.authentication.AuthenticationProvider
 import org.springframework.security.config.Customizer
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
@@ -41,6 +43,11 @@ class SecurityConfig(
     }
 
     @Bean
+    fun authenticationProvider(): AuthenticationProvider {
+        return CustomAuthenticationProvider(userDetailsService, passwordEncoder())
+    }
+
+    @Bean
     fun filterChain(http: HttpSecurity): SecurityFilterChain {
         http.formLogin(Customizer.withDefaults())
 
@@ -54,8 +61,17 @@ class SecurityConfig(
                     .anyRequest().authenticated()
             }
 
+        http
+            .formLogin { formLogin ->
+                formLogin
+                    .loginPage("/login")
+                    .loginProcessingUrl("/login_proc")
+                    .defaultSuccessUrl("/")
+                    .permitAll()
+            }
+
         http.getSharedObject(AuthenticationManagerBuilder::class.java)
-            .userDetailsService(userDetailsService)
+            .authenticationProvider(authenticationProvider())
 
         return http.build()
     }
