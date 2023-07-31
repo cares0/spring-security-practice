@@ -5,9 +5,7 @@ import org.springframework.security.web.authentication.WebAuthenticationDetails
 
 class FormWebAuthenticationDetails(
     request: HttpServletRequest,
-) : WebAuthenticationDetails(
-    request
-) {
+) : WebAuthenticationDetails(request) {
 
     val secretKey: String?
 

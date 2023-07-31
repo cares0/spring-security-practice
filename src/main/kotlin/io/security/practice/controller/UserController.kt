@@ -1,5 +1,6 @@
 package io.security.practice.controller
 
+import io.security.practice.domain.Account
 import io.security.practice.request.AccountRequest
 import io.security.practice.service.UserService
 import jakarta.servlet.http.HttpServletRequest
@@ -11,7 +12,6 @@ import org.springframework.ui.Model
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestParam
-import java.lang.Exception
 
 @Controller
 class UserController(
@@ -61,6 +61,21 @@ class UserController(
         }
 
         return "redirect:/login"
+    }
+
+    @GetMapping("/denied")
+    fun accessDenied(
+        @RequestParam(required = false) exception: String,
+        model: Model,
+    ): String {
+        val authentication = SecurityContextHolder.getContext().authentication
+
+        val account = authentication.principal as Account
+
+        model.addAttribute("username", account.username)
+        model.addAttribute("exception", exception)
+
+        return "user/login/denied"
     }
 
 }

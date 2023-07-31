@@ -20,7 +20,7 @@ class CustomAuthenticationProvider(
 
         val accountContext = userDetailsService.loadUserByUsername(username) as AccountContext
 
-        if (passwordEncoder.matches(password, accountContext.account.password)) {
+        if (!passwordEncoder.matches(password, accountContext.account.password)) {
             throw BadCredentialsException("FAIL")
         }
 

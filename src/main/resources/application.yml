@@ -8,14 +8,14 @@ spring:
         web-allow-others: true
 
   datasource:
-    driver-class-name: org.h2.Driver
-    url: jdbc:h2:~/security;MODE=MYSQL
-    username: sa
-    password:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3307/spring_security
+    username: root
+    password: 11111
 
   jpa:
     hibernate:
-      ddl-auto: create
+      ddl-auto: none
     properties:
       hibernate:
         show_sql: true

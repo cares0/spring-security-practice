@@ -1,6 +1,7 @@
 package io.security.practice.security
 
 import io.security.practice.security.authentication.CustomAuthenticationProvider
+import io.security.practice.security.authorization.CustomAccessDeniedHandler
 import jakarta.servlet.http.HttpServletRequest
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest
 import org.springframework.context.annotation.Bean
@@ -12,9 +13,11 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer
 import org.springframework.security.core.userdetails.UserDetailsService
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.security.crypto.factory.PasswordEncoderFactories
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.security.web.SecurityFilterChain
+import org.springframework.security.web.access.AccessDeniedHandler
 import org.springframework.security.web.authentication.AuthenticationFailureHandler
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler
@@ -44,7 +47,7 @@ class SecurityConfig(
 
     @Bean
     fun passwordEncoder(): PasswordEncoder {
-        return PasswordEncoderFactories.createDelegatingPasswordEncoder()
+        return BCryptPasswordEncoder()
     }
 
     @Bean
@@ -78,10 +81,19 @@ class SecurityConfig(
                     .permitAll()
             }
 
+        http
+            .exceptionHandling { exceptionHandling ->
+                exceptionHandling.accessDeniedHandler(accessDeniedHandler())
+            }
+
         http.getSharedObject(AuthenticationManagerBuilder::class.java)
             .authenticationProvider(authenticationProvider())
 
         return http.build()
+    }
+
+    fun accessDeniedHandler(): AccessDeniedHandler {
+        return CustomAccessDeniedHandler("/denied")
     }
 
     @Bean
