@@ -1,8 +1,11 @@
 package io.security.practice.security.authentication
 
 import io.security.practice.repository.AccountContext
+import io.security.practice.security.common.FormAuthenticationDetailsSource
+import io.security.practice.security.common.FormWebAuthenticationDetails
 import org.springframework.security.authentication.AuthenticationProvider
 import org.springframework.security.authentication.BadCredentialsException
+import org.springframework.security.authentication.InsufficientAuthenticationException
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.Authentication
 import org.springframework.security.core.userdetails.UserDetailsService
@@ -22,6 +25,12 @@ class CustomAuthenticationProvider(
 
         if (passwordEncoder.matches(password, accountContext.account.password)) {
             throw BadCredentialsException("FAIL")
+        }
+
+        val details = authentication.details as FormWebAuthenticationDetails
+
+        if (details.secretKey == null || details.secretKey != "secret") {
+            throw InsufficientAuthenticationException("InsufficientAuthenticationException")
         }
 
         return UsernamePasswordAuthenticationToken.authenticated(
