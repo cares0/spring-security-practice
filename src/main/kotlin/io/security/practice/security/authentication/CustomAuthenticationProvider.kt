@@ -1,8 +1,6 @@
 package io.security.practice.security.authentication
 
 import io.security.practice.repository.AccountContext
-import io.security.practice.security.common.FormAuthenticationDetailsSource
-import io.security.practice.security.common.FormWebAuthenticationDetails
 import org.springframework.security.authentication.AuthenticationProvider
 import org.springframework.security.authentication.BadCredentialsException
 import org.springframework.security.authentication.InsufficientAuthenticationException
@@ -10,7 +8,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication
 import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.security.crypto.password.PasswordEncoder
-import org.springframework.stereotype.Component
 
 class CustomAuthenticationProvider(
     private val userDetailsService: UserDetailsService,

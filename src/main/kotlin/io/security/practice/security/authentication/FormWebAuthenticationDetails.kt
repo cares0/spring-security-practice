@@ -1,4 +1,4 @@
-package io.security.practice.security.common
+package io.security.practice.security.authentication
 
 import jakarta.servlet.http.HttpServletRequest
 import org.springframework.security.web.authentication.WebAuthenticationDetails

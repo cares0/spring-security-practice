@@ -1,25 +1,22 @@
 package io.security.practice.security
 
 import io.security.practice.security.authentication.CustomAuthenticationProvider
-import io.security.practice.security.authentication.CustomUserDetailsService
-import io.security.practice.security.common.FormWebAuthenticationDetails
 import jakarta.servlet.http.HttpServletRequest
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.security.authentication.AuthenticationDetailsSource
-import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.AuthenticationProvider
 import org.springframework.security.config.Customizer
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer
-import org.springframework.security.core.userdetails.User
 import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.security.crypto.factory.PasswordEncoderFactories
 import org.springframework.security.crypto.password.PasswordEncoder
-import org.springframework.security.provisioning.InMemoryUserDetailsManager
 import org.springframework.security.web.SecurityFilterChain
+import org.springframework.security.web.authentication.AuthenticationSuccessHandler
+import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler
 import org.springframework.security.web.authentication.WebAuthenticationDetails
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher
 
@@ -27,6 +24,7 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher
 class SecurityConfig(
     private val userDetailsService: UserDetailsService,
     private val authenticationDetailsSource: AuthenticationDetailsSource<HttpServletRequest, WebAuthenticationDetails>,
+    private val successHandler: AuthenticationSuccessHandler,
 ) {
 
 //    @Bean
@@ -73,6 +71,7 @@ class SecurityConfig(
                     .loginProcessingUrl("/login_proc")
                     .defaultSuccessUrl("/")
                     .authenticationDetailsSource(authenticationDetailsSource)
+                    .successHandler(successHandler)
                     .permitAll()
             }
 
