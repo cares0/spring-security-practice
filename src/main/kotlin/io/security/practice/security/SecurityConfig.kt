@@ -1,5 +1,7 @@
 package io.security.practice.security
 
+import com.fasterxml.jackson.databind.ObjectMapper
+import io.security.practice.security.authentication.AjaxLoginProcessingFilter
 import io.security.practice.security.authentication.CustomAuthenticationProvider
 import io.security.practice.security.authorization.CustomAccessDeniedHandler
 import jakarta.servlet.http.HttpServletRequest
@@ -7,6 +9,7 @@ import org.springframework.boot.autoconfigure.security.servlet.PathRequest
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.security.authentication.AuthenticationDetailsSource
+import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.AuthenticationProvider
 import org.springframework.security.config.Customizer
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder
@@ -21,6 +24,7 @@ import org.springframework.security.web.access.AccessDeniedHandler
 import org.springframework.security.web.authentication.AuthenticationFailureHandler
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
 import org.springframework.security.web.authentication.WebAuthenticationDetails
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher
 
@@ -30,6 +34,7 @@ class SecurityConfig(
     private val authenticationDetailsSource: AuthenticationDetailsSource<HttpServletRequest, WebAuthenticationDetails>,
     private val successHandler: AuthenticationSuccessHandler,
     private val failureHandler: AuthenticationFailureHandler,
+    private val objectMapper: ObjectMapper,
 ) {
 
 //    @Bean
@@ -46,6 +51,16 @@ class SecurityConfig(
 //    }
 
     @Bean
+    fun ajaxLoginProcessingFilter(http: HttpSecurity): AjaxLoginProcessingFilter {
+        val ajaxLoginProcessingFilter = AjaxLoginProcessingFilter(objectMapper)
+
+        val authenticationManagerBuilder = http.getSharedObject(AuthenticationManagerBuilder::class.java)
+
+        ajaxLoginProcessingFilter.setAuthenticationManager(authenticationManagerBuilder.build())
+        return ajaxLoginProcessingFilter
+    }
+
+    @Bean
     fun passwordEncoder(): PasswordEncoder {
         return BCryptPasswordEncoder()
     }
@@ -58,9 +73,9 @@ class SecurityConfig(
     @Bean
     fun filterChain(http: HttpSecurity): SecurityFilterChain {
         http.formLogin(Customizer.withDefaults())
+        http.csrf { csrf -> csrf.disable() }
 
-        http
-            .authorizeHttpRequests { authorize ->
+        http.authorizeHttpRequests { authorize ->
                 authorize
                     .requestMatchers("/", "/users", "/login").permitAll()
                     .requestMatchers(AntPathRequestMatcher.antMatcher("/mypage")).hasRole("USER")
@@ -69,8 +84,7 @@ class SecurityConfig(
                     .anyRequest().authenticated()
             }
 
-        http
-            .formLogin { formLogin ->
+        http.formLogin { formLogin ->
                 formLogin
                     .loginPage("/login")
                     .loginProcessingUrl("/login_proc")
@@ -81,13 +95,14 @@ class SecurityConfig(
                     .permitAll()
             }
 
-        http
-            .exceptionHandling { exceptionHandling ->
+        http.exceptionHandling { exceptionHandling ->
                 exceptionHandling.accessDeniedHandler(accessDeniedHandler())
             }
 
         http.getSharedObject(AuthenticationManagerBuilder::class.java)
             .authenticationProvider(authenticationProvider())
+
+        http.addFilterBefore(ajaxLoginProcessingFilter(http), UsernamePasswordAuthenticationFilter::class.java)
 
         return http.build()
     }
