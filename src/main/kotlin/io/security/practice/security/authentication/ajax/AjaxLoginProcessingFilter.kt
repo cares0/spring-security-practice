@@ -1,4 +1,4 @@
-package io.security.practice.security.authentication
+package io.security.practice.security.authentication.ajax
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import jakarta.servlet.http.HttpServletRequest

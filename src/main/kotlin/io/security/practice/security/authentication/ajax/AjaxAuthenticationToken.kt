@@ -1,5 +1,6 @@
-package io.security.practice.security.authentication
+package io.security.practice.security.authentication.ajax
 
+import io.security.practice.domain.Account
 import org.springframework.security.authentication.AbstractAuthenticationToken
 import org.springframework.security.core.GrantedAuthority
 
@@ -26,6 +27,13 @@ class AjaxAuthenticationToken(
             credentials: Any,
         ): AjaxAuthenticationToken {
             return AjaxAuthenticationToken(username, credentials)
+        }
+
+        fun authenticated(
+            account: Account,
+            authorities: Collection<GrantedAuthority>,
+        ): AjaxAuthenticationToken {
+            return AjaxAuthenticationToken(account, account.password, authorities)
         }
 
     }

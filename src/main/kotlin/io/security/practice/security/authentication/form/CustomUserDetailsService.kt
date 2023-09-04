@@ -1,4 +1,4 @@
-package io.security.practice.security.authentication
+package io.security.practice.security.authentication.form
 
 import io.security.practice.repository.AccountContext
 import io.security.practice.repository.UserRepository

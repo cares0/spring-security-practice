@@ -1,15 +1,14 @@
-package io.security.practice.security
+package io.security.practice.security.config
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import io.security.practice.security.authentication.AjaxLoginProcessingFilter
-import io.security.practice.security.authentication.CustomAuthenticationProvider
+import io.security.practice.security.authentication.form.CustomAuthenticationProvider
 import io.security.practice.security.authorization.CustomAccessDeniedHandler
 import jakarta.servlet.http.HttpServletRequest
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.core.annotation.Order
 import org.springframework.security.authentication.AuthenticationDetailsSource
-import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.AuthenticationProvider
 import org.springframework.security.config.Customizer
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder
@@ -17,17 +16,15 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer
 import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
-import org.springframework.security.crypto.factory.PasswordEncoderFactories
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.security.web.SecurityFilterChain
 import org.springframework.security.web.access.AccessDeniedHandler
 import org.springframework.security.web.authentication.AuthenticationFailureHandler
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler
-import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
 import org.springframework.security.web.authentication.WebAuthenticationDetails
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher
 
+@Order(1)
 @Configuration
 class SecurityConfig(
     private val userDetailsService: UserDetailsService,
@@ -49,16 +46,6 @@ class SecurityConfig(
 //
 //        return InMemoryUserDetailsManager(userDetails)
 //    }
-
-    @Bean
-    fun ajaxLoginProcessingFilter(http: HttpSecurity): AjaxLoginProcessingFilter {
-        val ajaxLoginProcessingFilter = AjaxLoginProcessingFilter(objectMapper)
-
-        val authenticationManagerBuilder = http.getSharedObject(AuthenticationManagerBuilder::class.java)
-
-        ajaxLoginProcessingFilter.setAuthenticationManager(authenticationManagerBuilder.build())
-        return ajaxLoginProcessingFilter
-    }
 
     @Bean
     fun passwordEncoder(): PasswordEncoder {
@@ -101,8 +88,6 @@ class SecurityConfig(
 
         http.getSharedObject(AuthenticationManagerBuilder::class.java)
             .authenticationProvider(authenticationProvider())
-
-        http.addFilterBefore(ajaxLoginProcessingFilter(http), UsernamePasswordAuthenticationFilter::class.java)
 
         return http.build()
     }
