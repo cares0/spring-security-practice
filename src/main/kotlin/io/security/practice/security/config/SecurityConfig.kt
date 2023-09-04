@@ -1,7 +1,9 @@
 package io.security.practice.security.config
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import io.security.practice.security.authentication.form.CustomAuthenticationFailureHandler
 import io.security.practice.security.authentication.form.CustomAuthenticationProvider
+import io.security.practice.security.authentication.form.CustomAuthenticationSuccessHandler
 import io.security.practice.security.authorization.CustomAccessDeniedHandler
 import jakarta.servlet.http.HttpServletRequest
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest
@@ -29,8 +31,6 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher
 class SecurityConfig(
     private val userDetailsService: UserDetailsService,
     private val authenticationDetailsSource: AuthenticationDetailsSource<HttpServletRequest, WebAuthenticationDetails>,
-    private val successHandler: AuthenticationSuccessHandler,
-    private val failureHandler: AuthenticationFailureHandler,
     private val objectMapper: ObjectMapper,
 ) {
 
@@ -77,8 +77,8 @@ class SecurityConfig(
                     .loginProcessingUrl("/login_proc")
                     .defaultSuccessUrl("/")
                     .authenticationDetailsSource(authenticationDetailsSource)
-                    .successHandler(successHandler)
-                    .failureHandler(failureHandler)
+                    .successHandler(customSuccessHandler())
+                    .failureHandler(customFailureHandler())
                     .permitAll()
             }
 
@@ -103,6 +103,16 @@ class SecurityConfig(
                 .requestMatchers(PathRequest.toStaticResources().atCommonLocations())
                 .requestMatchers(PathRequest.toH2Console())
         }
+    }
+
+    @Bean
+    fun customSuccessHandler(): CustomAuthenticationSuccessHandler {
+        return CustomAuthenticationSuccessHandler()
+    }
+
+    @Bean
+    fun customFailureHandler(): CustomAuthenticationFailureHandler {
+        return CustomAuthenticationFailureHandler()
     }
 
 }

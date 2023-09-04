@@ -9,8 +9,8 @@ spring:
 
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3307/spring_security
-    username: root
+    url: jdbc:mysql://localhost:3306/spring_security_practice
+    username: user
     password: 11111
 
   jpa:
@@ -20,6 +20,7 @@ spring:
       hibernate:
         show_sql: true
         format_sql: true
+        dialect: org.hibernate.dialect.MySQLDialect
 
   devtools:
     livereload:
