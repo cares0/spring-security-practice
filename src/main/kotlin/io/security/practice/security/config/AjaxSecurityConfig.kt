@@ -1,10 +1,7 @@
 package io.security.practice.security.config
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import io.security.practice.security.authentication.ajax.AjaxAuthenticationProvider
-import io.security.practice.security.authentication.ajax.AjaxFailureHandler
-import io.security.practice.security.authentication.ajax.AjaxLoginProcessingFilter
-import io.security.practice.security.authentication.ajax.AjaxSuccessHandler
+import io.security.practice.security.authentication.ajax.*
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.core.annotation.Order
@@ -35,8 +32,14 @@ class AjaxSecurityConfig(
     fun ajaxFilterChain(http: HttpSecurity, builder: AuthenticationManagerBuilder) : SecurityFilterChain {
         http.authorizeHttpRequests { authorize ->
             authorize
+                .requestMatchers(AntPathRequestMatcher.antMatcher("/api/messages")).hasRole("MANAGER")
                 .requestMatchers(AntPathRequestMatcher.antMatcher("/api/**")).permitAll()
                 .anyRequest().permitAll()
+        }
+
+        http.exceptionHandling { exception ->
+            exception.authenticationEntryPoint(AjaxAuthenticationEntryPoint())
+            exception.accessDeniedHandler(AjaxAccessDeniedHandler())
         }
 
         http.addFilterBefore(ajaxLoginProcessingFilter(http), UsernamePasswordAuthenticationFilter::class.java)
