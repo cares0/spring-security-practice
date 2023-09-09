@@ -8,7 +8,7 @@ import org.springframework.security.web.authentication.AbstractAuthenticationPro
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher
 
 class AjaxLoginProcessingFilter(
-    private val objectMapper: ObjectMapper,
+    var objectMapper: ObjectMapper = ObjectMapper(),
 ) : AbstractAuthenticationProcessingFilter(
     AntPathRequestMatcher("/api/login")
 ) {

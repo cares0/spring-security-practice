@@ -42,8 +42,13 @@ class AjaxSecurityConfig(
             exception.accessDeniedHandler(AjaxAccessDeniedHandler())
         }
 
-        http.addFilterBefore(ajaxLoginProcessingFilter(http), UsernamePasswordAuthenticationFilter::class.java)
+        //http.addFilterBefore(ajaxLoginProcessingFilter(http), UsernamePasswordAuthenticationFilter::class.java)
         http.csrf { csrf -> csrf.disable() }
+
+        http.apply(AjaxLoginConfigurer())
+            .ajaxFailureHandler(ajaxAuthenticationFailureHandler())
+            .ajaxSuccessHandler(ajaxAuthenticationSuccessHandler())
+            .ajaxAuthenticationProvider(ajaxAuthenticationProvider())
 
         return http.build()
     }
@@ -63,17 +68,17 @@ class AjaxSecurityConfig(
         return AjaxAuthenticationProvider(userDetailsService, passwordEncoder)
     }
 
-    @Bean
-    fun ajaxLoginProcessingFilter(http: HttpSecurity): AjaxLoginProcessingFilter {
-        val ajaxLoginProcessingFilter = AjaxLoginProcessingFilter(objectMapper)
-
-        val authenticationManagerBuilder = http.getSharedObject(AuthenticationManagerBuilder::class.java)
-        authenticationManagerBuilder.authenticationProvider(ajaxAuthenticationProvider())
-
-        ajaxLoginProcessingFilter.setAuthenticationManager(authenticationManagerBuilder.build())
-        ajaxLoginProcessingFilter.setAuthenticationSuccessHandler(ajaxAuthenticationSuccessHandler())
-        ajaxLoginProcessingFilter.setAuthenticationFailureHandler(ajaxAuthenticationFailureHandler())
-        return ajaxLoginProcessingFilter
-    }
+//    @Bean
+//    fun ajaxLoginProcessingFilter(http: HttpSecurity): AjaxLoginProcessingFilter {
+//        val ajaxLoginProcessingFilter = AjaxLoginProcessingFilter(objectMapper)
+//
+//        val authenticationManagerBuilder = http.getSharedObject(AuthenticationManagerBuilder::class.java)
+//        authenticationManagerBuilder.authenticationProvider(ajaxAuthenticationProvider())
+//
+//        ajaxLoginProcessingFilter.setAuthenticationManager(authenticationManagerBuilder.build())
+//        ajaxLoginProcessingFilter.setAuthenticationSuccessHandler(ajaxAuthenticationSuccessHandler())
+//        ajaxLoginProcessingFilter.setAuthenticationFailureHandler(ajaxAuthenticationFailureHandler())
+//        return ajaxLoginProcessingFilter
+//    }
 
 }
